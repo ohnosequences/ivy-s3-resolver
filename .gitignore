@@ -1,6 +1,7 @@
 *.class
 *.log
-AwsCredentials.properties
+*Credentials.properties
+artifacts/*
 
 # sbt specific
 dist/*

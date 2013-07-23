@@ -16,17 +16,17 @@ publishMavenStyle := true
 
 publishTo <<= version { (v: String) =>
   if (v.trim.endsWith("SNAPSHOT"))
-    Some(Resolver.file("local-snapshots", file("artifacts/snapshots.ohnosequences.com")))
+    Some(Resolver.file("local-snapshots", file("artifacts/snapshots.era7.com")))
   else
-    Some(Resolver.file("local-releases", file("artifacts/releases.ohnosequences.com")))
+    Some(Resolver.file("local-releases", file("artifacts/releases.era7.com")))
 }
 
 resolvers ++= Seq (
                     "Typesafe Releases"   at "http://repo.typesafe.com/typesafe/releases",
                     "Sonatype Releases"   at "https://oss.sonatype.org/content/repositories/releases",
                     "Sonatype Snapshots"  at "https://oss.sonatype.org/content/repositories/snapshots",
-                    "Era7 Releases"       at "http://releases.ohnosequences.com.s3.amazonaws.com",
-                    "Era7 Snapshots"      at "http://snapshots.ohnosequences.com.s3.amazonaws.com"
+                    "Era7 Releases"       at "http://releases.era7.com.s3.amazonaws.com",
+                    "Era7 Snapshots"      at "http://snapshots.era7.com.s3.amazonaws.com"
                   )
 
 
