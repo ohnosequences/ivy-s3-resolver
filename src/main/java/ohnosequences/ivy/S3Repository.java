@@ -62,6 +62,7 @@ public class S3Repository extends AbstractRepository {
 	}
 
 	public void get(String source, File destination) {
+		//System.out.println("get source=" + source + " dst=" + destination.getPath());
 		Resource resource = getResource(source);
 		try {
 			fireTransferInitiated(resource, TransferEvent.REQUEST_GET);
@@ -83,6 +84,10 @@ public class S3Repository extends AbstractRepository {
 	}
 
 	public Resource getResource(String source) {
+		// if (!source.startsWith("s3:")) {
+		// 	return new org.apache.ivy.plugins.repository.BasicResource("", false, 0, 0, false);
+		// }
+		//System.out.println("getResource> " + source);
 		if (!resourceCache.containsKey(source)) {
 			resourceCache.put(source, new S3Resource(getClient(), source));
 		}
@@ -92,7 +97,7 @@ public class S3Repository extends AbstractRepository {
     @Override
 	public List<String> list(String parent) {
 
-
+		//System.out.print("parent> ");
 		String bucket = S3Utils.getBucket(parent);
 		String key = S3Utils.getKey(parent);
 
@@ -112,11 +117,12 @@ public class S3Repository extends AbstractRepository {
 
 	@Override
 	protected void put(File source, String destination, boolean overwrite) {
+		//System.out.print("parent> ");
 		String bucket = S3Utils.getBucket(destination);
 		String key = S3Utils.getKey(destination);
-        System.out.println("fake publish: bucket=" + bucket + " key=" + key);
+       // System.out.println("publishing: bucket=" + bucket + " key=" + key);
         PutObjectRequest request = new PutObjectRequest(bucket , key, source);
-        request = request.withCannedAcl(CannedAccessControlList.PublicRead);
+        request = request.withCannedAcl(CannedAccessControlList.Private);
 
         getClient().putObject(request);
 

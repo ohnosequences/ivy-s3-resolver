@@ -8,9 +8,9 @@ name := "ivy-s3-resolver"
 
 organization := "ohnosequences"
 
-version := "0.0.5"
+version := "0.0.6"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.9.2"
 
 publishMavenStyle := true
 

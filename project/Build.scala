@@ -16,8 +16,8 @@ import com.amazonaws.regions.Regions
 
 object S3Sync {
 
-  def sync(credentialsFile: File, path: File, bucket: String) {
-    val files= recursiveListFiles(path).filterNot(_.isDirectory)
+  def sync(credentialsFile: File, path: File, bucket: String, version: String) {
+    val files= recursiveListFiles(path).filterNot(_.isDirectory).filter(_.getName.contains(version))
     val s3Client = new AmazonS3Client(new PropertiesCredentials(credentialsFile))
     s3Client.setRegion(Region.getRegion(Regions.EU_WEST_1))
 
@@ -84,11 +84,11 @@ object ivyS3ResolverBuild extends Build {
       if (releasedVersion.endsWith("-SNAPSHOT")) {
         st.log.info("a snapshot release")
         st.log.info("artifacts will be uploaded to the snapshots repo")
-        S3Sync.sync(credentials.get, new File("artifacts/snapshots.ohnosequences.com"), "snapshots.ohnosequences.com")
+        S3Sync.sync(credentials.get, new File("artifacts/snapshots.ohnosequences.com"), "snapshots.ohnosequences.com", releasedVersion)
       } else {
         st.log.info("a normal release")
         st.log.info("artifacts will be uploaded to the releases repo")
-        S3Sync.sync(credentials.get, new File("artifacts/releases.ohnosequences.com"), "releases.ohnosequences.com")
+        S3Sync.sync(credentials.get, new File("artifacts/releases.ohnosequences.com"), "releases.ohnosequences.com", releasedVersion)
       }
     }
 

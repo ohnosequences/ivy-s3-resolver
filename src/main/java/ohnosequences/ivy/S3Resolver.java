@@ -38,6 +38,6 @@ public class S3Resolver extends RepositoryResolver {
 	}
 
 	public String getTypeName() {
-		return "S3";
+		return "s3";
 	}
 }

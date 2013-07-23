@@ -51,6 +51,7 @@ public class S3Resource implements Resource {
 		this.s3Client = client;
 		initializeS3(uri);
 		initalizeResource();
+		this.name = uri;
 	}
 
 	public Resource clone(String newUri) {
@@ -93,12 +94,13 @@ public class S3Resource implements Resource {
 
 	private void initalizeResource() {
 		try {
+			System.out.println("trying to resolve bucket=" + bucket + " key=" + key);
             ObjectMetadata metadata = s3Client.getObjectMetadata(bucket, key);
 
 			this.exists = true;
 			this.contentLength = metadata.getContentLength();
 			this.lastModified = metadata.getLastModified().getTime();
-			this.name = key;
+			
 		}
 		catch (AmazonServiceException e) {
 			this.exists = false;
