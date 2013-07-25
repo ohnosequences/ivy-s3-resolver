@@ -56,16 +56,18 @@ object ivyS3ResolverBuild extends Build {
     base = file("."),
     settings = Defaults.defaultSettings ++ releaseSettings ++ Seq(
 
-        releaseProcess <<= thisProjectRef apply { ref =>
-          Seq[ReleaseStep](
-            checkSnapshotDependencies,              // : ReleaseStep
-            inquireVersions,                        // : ReleaseStep
-            runTest,                                // : ReleaseStep
-            setReleaseVersion,                      // : ReleaseStep
-            publishArtifacts,                       // : ReleaseStep, checks whether `publishTo` is properly set up
-            uploadArtifacts                        // : ReleaseStep, uploads generated artifacts to s3
-          )
-        }
+        publishArtifact in packageDoc := false
+
+        // releaseProcess <<= thisProjectRef apply { ref =>
+        //   Seq[ReleaseStep](
+        //     checkSnapshotDependencies,              // : ReleaseStep
+        //     inquireVersions,                        // : ReleaseStep
+        //     runTest,                                // : ReleaseStep
+        //     setReleaseVersion,                      // : ReleaseStep
+        //     publishArtifacts,                       // : ReleaseStep, checks whether `publishTo` is properly set up
+        //     uploadArtifacts                        // : ReleaseStep, uploads generated artifacts to s3
+        //   )
+        // }
       )
   )
 

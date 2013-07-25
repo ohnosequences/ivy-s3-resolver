@@ -8,7 +8,6 @@ name := "ivy-s3-resolver"
 
 organization := "ohnosequences"
 
-version := "0.0.6"
 
 scalaVersion := "2.9.2"
 
@@ -33,6 +32,8 @@ resolvers ++= Seq (
 libraryDependencies += "com.amazonaws" % "aws-java-sdk" % "1.5.1"
 
 libraryDependencies += "org.apache.ivy" % "ivy" % "2.3.0"
+
+javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
 
 
