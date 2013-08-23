@@ -31,7 +31,7 @@ import org.apache.ivy.plugins.repository.Resource;
  */
 public class S3Resource implements Resource {
 
-    private AmazonS3Client s3Client;
+    private S3Repository s3Repo;
 
 	private String bucket;
 
@@ -47,15 +47,15 @@ public class S3Resource implements Resource {
 
 
 
-	public S3Resource(AmazonS3Client client, String uri) {
-		this.s3Client = client;
+	public S3Resource(S3Repository s3Repo, String uri) {
+		this.s3Repo = s3Repo;
 		initializeS3(uri);
 		initalizeResource();
 		this.name = uri;
 	}
 
 	public Resource clone(String newUri) {
-		return new S3Resource(s3Client, newUri);
+		return new S3Resource(s3Repo, newUri);
 	}
 
 	public boolean exists() {
@@ -80,7 +80,7 @@ public class S3Resource implements Resource {
 
 	public InputStream openStream() {
 		try {
-            return s3Client.getObject(bucket, key).getObjectContent();
+            return s3Repo.getS3Client().getObject(bucket, key).getObjectContent();
 		}
 		catch (AmazonServiceException e) {
 			throw new S3RepositoryException(e);
@@ -95,7 +95,7 @@ public class S3Resource implements Resource {
 	private void initalizeResource() {
 		try {
 			System.out.println("trying to resolve bucket=" + bucket + " key=" + key);
-            ObjectMetadata metadata = s3Client.getObjectMetadata(bucket, key);
+            ObjectMetadata metadata = s3Repo.getS3Client().getObjectMetadata(bucket, key);
 
 			this.exists = true;
 			this.contentLength = metadata.getContentLength();

@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.auth.*;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -36,6 +37,7 @@ import org.apache.ivy.plugins.repository.RepositoryCopyProgressListener;
 import org.apache.ivy.plugins.repository.Resource;
 import org.apache.ivy.plugins.repository.TransferEvent;
 import org.apache.ivy.util.FileUtil;
+
 
 /**
  * A repository the allows you to upload and download from an S3 repository.
@@ -49,7 +51,12 @@ public class S3Repository extends AbstractRepository {
 
 	private String secretKey;
 
-    private AmazonS3Client s3Client;
+    //private AmazonS3Client s3Client;
+    private InstanceProfileCredentialsProvider credentialsProvider = new InstanceProfileCredentialsProvider();
+
+    private volatile boolean useAMI = true;
+
+    private volatile boolean firstRun = true;
 
 	private Map<String, S3Resource> resourceCache = new HashMap<String, S3Resource>();
 
@@ -89,7 +96,7 @@ public class S3Repository extends AbstractRepository {
 		// }
 		//System.out.println("getResource> " + source);
 		if (!resourceCache.containsKey(source)) {
-			resourceCache.put(source, new S3Resource(getClient(), source));
+			resourceCache.put(source, new S3Resource(this, source));
 		}
 		return resourceCache.get(source);
 	}
@@ -102,7 +109,7 @@ public class S3Repository extends AbstractRepository {
 		String key = S3Utils.getKey(parent);
 
 		try {
-            List<S3ObjectSummary> summaries = getClient().listObjects(bucket, key).getObjectSummaries();
+            List<S3ObjectSummary> summaries = getS3Client().listObjects(bucket, key).getObjectSummaries();
 
 			List<String> keys = new ArrayList<String>(summaries.size());
 			for (S3ObjectSummary summary : summaries) {
@@ -124,23 +131,41 @@ public class S3Repository extends AbstractRepository {
         PutObjectRequest request = new PutObjectRequest(bucket , key, source);
         request = request.withCannedAcl(CannedAccessControlList.Private);
 
-        getClient().putObject(request);
-
+        if (!getS3Client().doesBucketExist(bucket)) {
+        	getS3Client().createBucket(bucket);	
+        } 
+        getS3Client().putObject(request);
 
 	}
 
-	private AmazonS3Client getClient() {
-		if (s3Client == null) {
+	public AmazonS3Client getS3Client() {
+		if (firstRun) {
+			firstRun = false;
 			try {
-                s3Client = new AmazonS3Client(new BasicAWSCredentials(accessKey, secretKey));
-                s3Client.setRegion(Region.getRegion(Regions.EU_WEST_1));
-			}
-			catch (AmazonServiceException e) {
-				throw new S3RepositoryException(e);
-			}
+				credentialsProvider.getCredentials();	
+			} catch (AmazonClientException e1) {
+				useAMI = false;
+			}		
 		}
-		return s3Client;
-	}
 
+		try {
+
+			AWSCredentials credentilas;
+
+			if (useAMI) {
+				credentilas = credentialsProvider.getCredentials();
+			} else {
+				credentilas = new BasicAWSCredentials(accessKey, secretKey);
+			}
+
+			AmazonS3Client s3Client = new AmazonS3Client(credentilas);
+            s3Client.setRegion(Region.getRegion(Regions.EU_WEST_1));
+            return s3Client;
+
+		} catch (AmazonServiceException e) {
+			throw new S3RepositoryException(e);
+		}
+		
+	}
 
 }
