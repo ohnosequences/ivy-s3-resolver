@@ -26,6 +26,7 @@ import java.util.Map;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.*;
+import com.amazonaws.internal.*
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
