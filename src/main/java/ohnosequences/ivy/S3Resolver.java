@@ -35,7 +35,8 @@ public class S3Resolver extends RepositoryResolver {
 		((S3Repository)getRepository()).setSecretKey(secretKey);
 	}
 
-	public S3Resolver(String accessKey, String secretKey) {
+	public S3Resolver(String name, String accessKey, String secretKey) {
+		setName(name);
 		setRepository(new S3Repository(accessKey, secretKey));
 	}
 
