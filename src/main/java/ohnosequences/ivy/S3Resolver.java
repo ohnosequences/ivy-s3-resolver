@@ -25,16 +25,18 @@ import org.apache.ivy.plugins.resolver.RepositoryResolver;
  */
 public class S3Resolver extends RepositoryResolver {
 	
+	@Deprecated
 	public void setAccessKey(String accessKey) {
 		((S3Repository)getRepository()).setAccessKey(accessKey);
 	}
 	
+	@Deprecated
 	public void setSecretKey(String secretKey) {
 		((S3Repository)getRepository()).setSecretKey(secretKey);
 	}
 
-	public S3Resolver() {
-		setRepository(new S3Repository());
+	public S3Resolver(String accessKey, String secretKey) {
+		setRepository(new S3Repository(accessKey, secretKey));
 	}
 
 	public String getTypeName() {
