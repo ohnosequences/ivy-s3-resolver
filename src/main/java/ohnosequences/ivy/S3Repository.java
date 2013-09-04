@@ -51,22 +51,28 @@ public class S3Repository extends AbstractRepository {
 
 	private String secretKey;
 
-    //private AmazonS3Client s3Client;
-    private InstanceProfileCredentialsProvider credentialsProvider = new InstanceProfileCredentialsProvider();
+    private AmazonS3Client s3Client;
 
-    private volatile boolean useAMI = true;
-
-    private volatile boolean firstRun = true;
+    private AWSCredentialsProvider credentialsProvider;
 
 	private Map<String, S3Resource> resourceCache = new HashMap<String, S3Resource>();
 
-	public void setAccessKey(String accessKey) {
-		this.accessKey = accessKey;
+	public S3Repository(String accessKey, String secretKey) {
+		credentialsProvider = new InstanceProfileCredentialsProvider();
+		try {
+			credentialsProvider.getCredentials();	
+		} catch (AmazonClientException e1) {
+			credentialsProvider = new StaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+		}
+		s3Client = new AmazonS3Client(credentialsProvider);
+
 	}
 
-	public void setSecretKey(String secretKey) {
-		this.secretKey = secretKey;
-	}
+	@Deprecated
+	public void setAccessKey(String accessKey) {}
+
+	@Deprecated
+	public void setSecretKey(String secretKey) {}
 
 	public void get(String source, File destination) {
 		//System.out.println("get source=" + source + " dst=" + destination.getPath());
@@ -139,33 +145,7 @@ public class S3Repository extends AbstractRepository {
 	}
 
 	public AmazonS3Client getS3Client() {
-		if (firstRun) {
-			firstRun = false;
-			try {
-				credentialsProvider.getCredentials();	
-			} catch (AmazonClientException e1) {
-				useAMI = false;
-			}		
-		}
-
-		try {
-
-			AWSCredentials credentilas;
-
-			if (useAMI) {
-				credentilas = credentialsProvider.getCredentials();
-			} else {
-				credentilas = new BasicAWSCredentials(accessKey, secretKey);
-			}
-
-			AmazonS3Client s3Client = new AmazonS3Client(credentilas);
-            s3Client.setRegion(Region.getRegion(Regions.EU_WEST_1));
-            return s3Client;
-
-		} catch (AmazonServiceException e) {
-			throw new S3RepositoryException(e);
-		}
-		
+        return s3Client;		
 	}
 
 }
