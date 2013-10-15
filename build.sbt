@@ -31,7 +31,7 @@ resolvers ++= Seq (
 , "Era7 Snapshots"      at "http://snapshots.era7.com.s3.amazonaws.com"
 )
 
-libraryDependencies += "com.amazonaws" % "aws-java-sdk" % "1.5.1"
+libraryDependencies += "com.amazonaws" % "aws-java-sdk" % "1.6.1"
 
 libraryDependencies += "org.apache.ivy" % "ivy" % "2.3.0"
 

@@ -27,17 +27,15 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.*;
 import com.amazonaws.internal.*;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import org.apache.ivy.plugins.repository.AbstractRepository;
 import org.apache.ivy.plugins.repository.RepositoryCopyProgressListener;
 import org.apache.ivy.plugins.repository.Resource;
 import org.apache.ivy.plugins.repository.TransferEvent;
 import org.apache.ivy.util.FileUtil;
+import org.apache.ivy.util.Message;
+
 
 
 /**
@@ -58,7 +56,11 @@ public class S3Repository extends AbstractRepository {
 
 	private Map<String, S3Resource> resourceCache = new HashMap<String, S3Resource>();
 
-	public S3Repository(String accessKey, String secretKey) {
+	private Region region;
+
+	private boolean overwrite;
+
+	public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region) {
 		credentialsProvider = new InstanceProfileCredentialsProvider();
 		try {
 			credentialsProvider.getCredentials();	
@@ -66,14 +68,10 @@ public class S3Repository extends AbstractRepository {
 			credentialsProvider = new StaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
 		}
 		s3Client = new AmazonS3Client(credentialsProvider);
+		this.overwrite = overwrite;
+		this.region = region;
 
 	}
-
-	@Deprecated
-	public void setAccessKey(String accessKey) {}
-
-	@Deprecated
-	public void setSecretKey(String secretKey) {}
 
 	public void get(String source, File destination) {
 		//System.out.println("get source=" + source + " dst=" + destination.getPath());
@@ -129,18 +127,49 @@ public class S3Repository extends AbstractRepository {
 		}
 	}
 
+	private boolean createBucket(String name, Region region) {
+		int attemptLimit = 5;
+		int timeout = 1000 * 20;
+		int attempt = 0;
+
+		while(attempt < attemptLimit) {
+			try {
+				attempt++;
+
+				getS3Client().createBucket(name, region);	
+				if(getS3Client().doesBucketExist(name)) {
+					return true;	
+				}
+				
+			} catch(AmazonS3Exception s3e) {
+				try {	
+					Message.warn(s3e.toString());				
+					Thread.sleep(timeout);
+				} catch (InterruptedException e) {
+				}
+			}			
+		}
+		return false;
+	}
+
 	@Override
 	protected void put(File source, String destination, boolean overwrite) {
 		//System.out.print("parent> ");
 		String bucket = S3Utils.getBucket(destination);
 		String key = S3Utils.getKey(destination);
        // System.out.println("publishing: bucket=" + bucket + " key=" + key);
-        PutObjectRequest request = new PutObjectRequest(bucket , key, source);
+        PutObjectRequest request = new PutObjectRequest(bucket ,key, source);
         request = request.withCannedAcl(CannedAccessControlList.Private);
 
         if (!getS3Client().doesBucketExist(bucket)) {
-        	getS3Client().createBucket(bucket);	
-        } 
+        	if(!createBucket(bucket, region)) {
+        		throw new Error("couldn't create bucket");	
+        	}
+        }
+
+        if (!this.overwrite && !getS3Client().listObjects(bucket, key).getObjectSummaries().isEmpty()) {
+            throw new Error(destination + " exists but overwriting is disabled");
+        }
         getS3Client().putObject(request);
 
 	}

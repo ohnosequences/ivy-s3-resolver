@@ -16,6 +16,7 @@
 package ohnosequences.ivy;
 
 import org.apache.ivy.plugins.resolver.RepositoryResolver;
+import com.amazonaws.services.s3.model.Region;
 
 /**
  * A dependency resolver that looks to an S3 repository to resolve dependencies.
@@ -25,19 +26,9 @@ import org.apache.ivy.plugins.resolver.RepositoryResolver;
  */
 public class S3Resolver extends RepositoryResolver {
 	
-	@Deprecated
-	public void setAccessKey(String accessKey) {
-		((S3Repository)getRepository()).setAccessKey(accessKey);
-	}
-	
-	@Deprecated
-	public void setSecretKey(String secretKey) {
-		((S3Repository)getRepository()).setSecretKey(secretKey);
-	}
-
-	public S3Resolver(String name, String accessKey, String secretKey) {
+	public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region) {
 		setName(name);
-		setRepository(new S3Repository(accessKey, secretKey));
+		setRepository(new S3Repository(accessKey, secretKey, overwrite, region));
 	}
 
 	public String getTypeName() {
