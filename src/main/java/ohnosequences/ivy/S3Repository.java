@@ -70,8 +70,13 @@ public class S3Repository extends AbstractRepository {
 		s3Client = new AmazonS3Client(credentialsProvider);
 		this.overwrite = overwrite;
 		this.region = region;
-
 	}
+
+    public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region) {
+        s3Client = new AmazonS3Client(provider);
+        this.overwrite = overwrite;
+        this.region = region;
+    }
 
 	public void get(String source, File destination) {
 		//System.out.println("get source=" + source + " dst=" + destination.getPath());
