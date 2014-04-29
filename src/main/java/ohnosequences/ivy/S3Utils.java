@@ -35,7 +35,7 @@ public class S3Utils {
 	public static String getBucket(String uri) {
 		//System.out.print("parsing bucket from uri " + uri);
 		String bucket = getUri(uri).getHost();
-		System.out.println(" bucket=" + bucket);
+		// System.out.println(" bucket=" + bucket);
 		return bucket;
 	}
 
@@ -47,7 +47,7 @@ public class S3Utils {
 	public static String getKey(String uri) {
 		//System.out.print("parsing key from uri " + uri);
 		String key = getUri(uri).getPath().substring(1);
-		System.out.println(" key=" + key);
+		// System.out.println(" key=" + key);
 		return key;
 	}
 

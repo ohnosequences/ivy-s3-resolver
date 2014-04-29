@@ -94,8 +94,8 @@ public class S3Resource implements Resource {
 
 	private void initalizeResource() {
 		try {
-			System.out.println("trying to resolve bucket=" + bucket + " key=" + key);
-            ObjectMetadata metadata = s3Repo.getS3Client().getObjectMetadata(bucket, key);
+			// System.out.println("trying to resolve bucket=" + bucket + " key=" + key);
+			ObjectMetadata metadata = s3Repo.getS3Client().getObjectMetadata(bucket, key);
 
 			this.exists = true;
 			this.contentLength = metadata.getContentLength();
