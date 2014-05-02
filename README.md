@@ -1,4 +1,16 @@
 ivy-s3-resolver
 ===============
 
-ivy resolver that support publishing to S3 objects
+Ivy resolver that supports publishing to S3 objects.
+
+To add a dependency in your sbt project use this:
+
+```scala
+resolvers += "Era7 maven releases" at "http://releases.era7.com.s3.amazonaws.com"
+
+libraryDependencies += "ohnosequences" % "ivy-s3-resolver" % "<version>"
+```
+
+(see the latest version in the [releases list](https://github.com/ohnosequences/ivy-s3-resolver/releases))
+
+Normally you won't use this resolver directly, see [sbt-s3-resolver](https://github.com/ohnosequences/sbt-s3-resolver) instead.

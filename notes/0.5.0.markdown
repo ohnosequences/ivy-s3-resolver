@@ -1,0 +1,4 @@
+* Started using [nice-sbt-settings](https://github.com/ohnosequences/nice-sbt-settings) plugin (that means, that we don't crosscompile anymore);
+* Moved to Java 7;
+* Updated dependencies versions;
+* Removed debug output when publishing artifacts;
