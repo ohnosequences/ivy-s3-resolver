@@ -113,18 +113,24 @@ public class S3Repository extends AbstractRepository {
 
     @Override
 	public List<String> list(String parent) {
-
-		//System.out.print("parent> ");
-		String bucket = S3Utils.getBucket(parent);
-		String key = S3Utils.getKey(parent);
-
 		try {
-            List<S3ObjectSummary> summaries = getS3Client().listObjects(bucket, key).getObjectSummaries();
+			ListObjectsRequest request = new ListObjectsRequest()
+			    .withBucketName(S3Utils.getBucket(parent))
+			    .withPrefix(S3Utils.getKey(parent))
+			    .withDelimiter("/"); // RFC 2396
 
-			List<String> keys = new ArrayList<String>(summaries.size());
-			for (S3ObjectSummary summary : summaries) {
+			ObjectListing listing = getS3Client().listObjects(request);
+
+			List<String> keys = new ArrayList<String>(listing.getCommonPrefixes().size() + listing.getObjectSummaries().size());
+
+			// Add "directories"
+			keys.addAll(listing.getCommonPrefixes());
+
+			// Add "files"
+			for (S3ObjectSummary summary : listing.getObjectSummaries()) {
 				keys.add(summary.getKey());
 			}
+
 			return keys;
 		}
 		catch (AmazonServiceException e) {
