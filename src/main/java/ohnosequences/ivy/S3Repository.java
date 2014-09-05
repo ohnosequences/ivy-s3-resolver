@@ -114,22 +114,28 @@ public class S3Repository extends AbstractRepository {
     @Override
 	public List<String> list(String parent) {
 		try {
-			ListObjectsRequest request = new ListObjectsRequest()
-			    .withBucketName(S3Utils.getBucket(parent))
-			    .withPrefix(S3Utils.getKey(parent))
-			    .withDelimiter("/"); // RFC 2396
+			String marker = null;
+			List<String> keys = new ArrayList<String>();
 
-			ObjectListing listing = getS3Client().listObjects(request);
+			do {
+				ListObjectsRequest request = new ListObjectsRequest()
+				    .withBucketName(S3Utils.getBucket(parent))
+				    .withPrefix(S3Utils.getKey(parent))
+				    .withDelimiter("/") // RFC 2396
+				    .withMarker(marker);
 
-			List<String> keys = new ArrayList<String>(listing.getCommonPrefixes().size() + listing.getObjectSummaries().size());
+				ObjectListing listing = getS3Client().listObjects(request);
 
-			// Add "directories"
-			keys.addAll(listing.getCommonPrefixes());
+				// Add "directories"
+				keys.addAll(listing.getCommonPrefixes());
 
-			// Add "files"
-			for (S3ObjectSummary summary : listing.getObjectSummaries()) {
-				keys.add(summary.getKey());
-			}
+				// Add "files"
+				for (S3ObjectSummary summary : listing.getObjectSummaries()) {
+					keys.add(summary.getKey());
+				}
+
+				marker = listing.getNextMarker();
+			} while (marker != null);
 
 			return keys;
 		}
