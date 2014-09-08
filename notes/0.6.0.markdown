@@ -1,0 +1,1 @@
+* Added ivy dynammic revisions support (by @acollver). See [ohnosequences/sbt-s3-resolver#31](https://github.com/ohnosequences/sbt-s3-resolver/issues/31)
