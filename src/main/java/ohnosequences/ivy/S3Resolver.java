@@ -16,26 +16,37 @@
 package ohnosequences.ivy;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import org.apache.ivy.plugins.resolver.RepositoryResolver;
 import com.amazonaws.services.s3.model.Region;
 
 /**
  * A dependency resolver that looks to an S3 repository to resolve dependencies.
- * 
+ *
  * @author Ben Hale
  * @author Evdokim Kovach
  */
 public class S3Resolver extends RepositoryResolver {
-	
+
 	public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region) {
 		setName(name);
 		setRepository(new S3Repository(accessKey, secretKey, overwrite, region));
 	}
 
-    public S3Resolver(String name, AWSCredentialsProvider credentialsProvider, boolean overwrite, Region region) {
-        setName(name);
-        setRepository(new S3Repository(credentialsProvider, overwrite, region));
-    }
+	public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl) {
+		setName(name);
+		setRepository(new S3Repository(accessKey, secretKey, overwrite, region, acl));
+	}
+
+	public S3Resolver(String name, AWSCredentialsProvider credentialsProvider, boolean overwrite, Region region) {
+		setName(name);
+		setRepository(new S3Repository(credentialsProvider, overwrite, region));
+	}
+
+	public S3Resolver(String name, AWSCredentialsProvider credentialsProvider, boolean overwrite, Region region, CannedAccessControlList acl) {
+		setName(name);
+		setRepository(new S3Repository(credentialsProvider, overwrite, region, acl));
+	}
 
 	public String getTypeName() {
 		return "s3";
