@@ -16,8 +16,8 @@ libraryDependencies += "ohnosequences" % "ivy-s3-resolver" % "<version>"
 Normally you won't use this resolver directly, see [sbt-s3-resolver](https://github.com/ohnosequences/sbt-s3-resolver) instead.
 
 
-API documentation
------------------
+### API documentation
+
 
 Just in case, API docs for 
 
