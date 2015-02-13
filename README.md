@@ -23,3 +23,8 @@ Just in case, API docs for
 
 - [`v0.5.0`](http://ohnosequences.com/ivy-s3-resolver/docs/api/0.5.0/)
 - [`v0.6.0`](http://ohnosequences.com/ivy-s3-resolver/docs/api/0.6.0/)
+
+
+### Contacts
+
+This project is maintained by [@evdokim](https://github.com/evdokim).
