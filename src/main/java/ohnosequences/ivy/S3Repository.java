@@ -57,7 +57,7 @@ public class S3Repository extends AbstractRepository {
 	private CannedAccessControlList acl;
 
 	public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region) {
-		this(accessKey, secretKey, overwrite, region, CannedAccessControlList.Private);
+		this(accessKey, secretKey, overwrite, region, CannedAccessControlList.PublicRead);
 	}
 
 	public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl) {
@@ -75,7 +75,7 @@ public class S3Repository extends AbstractRepository {
 	}
 
 	public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region) {
-		this(provider, overwrite, region, CannedAccessControlList.Private);
+		this(provider, overwrite, region, CannedAccessControlList.PublicRead);
 	}
 
 	public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region, CannedAccessControlList acl) {

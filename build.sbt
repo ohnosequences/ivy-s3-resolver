@@ -1,10 +1,7 @@
 Nice.javaProject
 
 name := "ivy-s3-resolver"
-
 organization := "ohnosequences"
-
-publishMavenStyle := true
 
 bucketSuffix := "era7.com"
 
