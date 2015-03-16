@@ -42,19 +42,13 @@ import org.apache.ivy.util.Message;
 
 /**
  * A repository the allows you to upload and download from an S3 repository.
- * 
+ *
  * @author Ben Hale
  * @author Evdokim Kovach
  */
 public class S3Repository extends AbstractRepository {
 
-	private String accessKey;
-
-	private String secretKey;
-
-    private AmazonS3Client s3Client;
-
-    private AWSCredentialsProvider credentialsProvider;
+	private AmazonS3Client s3Client;
 
 	private Map<String, S3Resource> resourceCache = new HashMap<String, S3Resource>();
 
@@ -62,23 +56,36 @@ public class S3Repository extends AbstractRepository {
 
 	private boolean overwrite;
 
+	private CannedAccessControlList acl;
+
 	public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region) {
-		credentialsProvider = new InstanceProfileCredentialsProvider();
-		try {
-			credentialsProvider.getCredentials();	
-		} catch (AmazonClientException e1) {
-			credentialsProvider = new StaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
-		}
-		s3Client = new AmazonS3Client(credentialsProvider);
-		this.overwrite = overwrite;
-		this.region = region;
+		this(accessKey, secretKey, overwrite, region, CannedAccessControlList.PublicRead);
 	}
 
-    public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region) {
-        s3Client = new AmazonS3Client(provider);
-        this.overwrite = overwrite;
-        this.region = region;
-    }
+	public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl) {
+		AWSCredentialsProvider provider = new InstanceProfileCredentialsProvider();
+		try {
+			provider.getCredentials();
+		} catch (AmazonClientException e1) {
+			provider = new StaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+		}
+
+		s3Client = new AmazonS3Client(provider);
+		this.overwrite = overwrite;
+		this.region = region;
+		this.acl = acl;
+	}
+
+	public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region) {
+		this(provider, overwrite, region, CannedAccessControlList.PublicRead);
+	}
+
+	public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region, CannedAccessControlList acl) {
+		s3Client = new AmazonS3Client(provider);
+		this.overwrite = overwrite;
+		this.region = region;
+		this.acl = acl;
+	}
 
 	public void get(String source, File destination) {
 		//System.out.println("get source=" + source + " dst=" + destination.getPath());
@@ -113,7 +120,7 @@ public class S3Repository extends AbstractRepository {
 		return resourceCache.get(source);
 	}
 
-    @Override
+	@Override
 	public List<String> list(String parent) {
 		try {
 			String marker = null;
@@ -121,10 +128,10 @@ public class S3Repository extends AbstractRepository {
 
 			do {
 				ListObjectsRequest request = new ListObjectsRequest()
-				    .withBucketName(S3Utils.getBucket(parent))
-				    .withPrefix(S3Utils.getKey(parent))
-				    .withDelimiter("/") // RFC 2396
-				    .withMarker(marker);
+						.withBucketName(S3Utils.getBucket(parent))
+						.withPrefix(S3Utils.getKey(parent))
+						.withDelimiter("/") // RFC 2396
+						.withMarker(marker);
 
 				ObjectListing listing = getS3Client().listObjects(request);
 
@@ -155,18 +162,18 @@ public class S3Repository extends AbstractRepository {
 			try {
 				attempt++;
 
-				getS3Client().createBucket(name, region);	
+				getS3Client().createBucket(name, region);
 				if(getS3Client().doesBucketExist(name)) {
-					return true;	
+					return true;
 				}
-				
+
 			} catch(AmazonS3Exception s3e) {
-				try {	
-					Message.warn(s3e.toString());				
+				try {
+					Message.warn(s3e.toString());
 					Thread.sleep(timeout);
 				} catch (InterruptedException e) {
 				}
-			}			
+			}
 		}
 		return false;
 	}
@@ -176,25 +183,25 @@ public class S3Repository extends AbstractRepository {
 		//System.out.print("parent> ");
 		String bucket = S3Utils.getBucket(destination);
 		String key = S3Utils.getKey(destination);
-       // System.out.println("publishing: bucket=" + bucket + " key=" + key);
-        PutObjectRequest request = new PutObjectRequest(bucket ,key, source);
-        request = request.withCannedAcl(CannedAccessControlList.Private);
+		// System.out.println("publishing: bucket=" + bucket + " key=" + key);
+		PutObjectRequest request = new PutObjectRequest(bucket ,key, source);
+		request = request.withCannedAcl(acl);
 
-        if (!getS3Client().doesBucketExist(bucket)) {
-        	if(!createBucket(bucket, region)) {
-        		throw new Error("couldn't create bucket");	
-        	}
-        }
+		if (!getS3Client().doesBucketExist(bucket)) {
+			if(!createBucket(bucket, region)) {
+				throw new Error("couldn't create bucket");
+			}
+		}
 
-        if (!this.overwrite && !getS3Client().listObjects(bucket, key).getObjectSummaries().isEmpty()) {
-            throw new Error(destination + " exists but overwriting is disabled");
-        }
-        getS3Client().putObject(request);
+		if (!this.overwrite && !getS3Client().listObjects(bucket, key).getObjectSummaries().isEmpty()) {
+			throw new Error(destination + " exists but overwriting is disabled");
+		}
+		getS3Client().putObject(request);
 
 	}
 
 	public AmazonS3Client getS3Client() {
-        return s3Client;		
+		return s3Client;
 	}
 
 }
