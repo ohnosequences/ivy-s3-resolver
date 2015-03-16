@@ -1,0 +1,2 @@
+* Upgraded to `aws-java-sdk-s3` v1.9.24 and `ivy` v2.4.0
+* [@anzecesar](https://github.com/anzecesar) added `CannedAccessControlList` as a configuration option (see #8)
