@@ -23,4 +23,4 @@ Normally you won't use this resolver directly, see [sbt-s3-resolver](https://git
 
 ### Contacts
 
-This project is maintained by [@evdokim](https://github.com/evdokim).
+This project is maintained by [@laughedelic](https://github.com/laughedelic).
