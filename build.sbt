@@ -8,6 +8,6 @@ bucketSuffix := "era7.com"
 javaVersion := "1.7"
 
 libraryDependencies ++= Seq(
-  "com.amazonaws" % "aws-java-sdk-s3" % "1.9.24",
+  "com.amazonaws" % "aws-java-sdk-s3" % "1.10.20",
   "org.apache.ivy" % "ivy" % "2.4.0"
 )
