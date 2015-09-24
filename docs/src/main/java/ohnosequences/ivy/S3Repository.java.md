@@ -209,20 +209,7 @@ public class S3Repository extends AbstractRepository {
 ```
 
 
-------
 
-### Index
-
-+ src
-  + main
-    + java
-      + ohnosequences
-        + ivy
-          + [S3Repository.java][main/java/ohnosequences/ivy/S3Repository.java]
-          + [S3RepositoryException.java][main/java/ohnosequences/ivy/S3RepositoryException.java]
-          + [S3Resolver.java][main/java/ohnosequences/ivy/S3Resolver.java]
-          + [S3Resource.java][main/java/ohnosequences/ivy/S3Resource.java]
-          + [S3Utils.java][main/java/ohnosequences/ivy/S3Utils.java]
 
 [main/java/ohnosequences/ivy/S3Repository.java]: S3Repository.java.md
 [main/java/ohnosequences/ivy/S3RepositoryException.java]: S3RepositoryException.java.md
