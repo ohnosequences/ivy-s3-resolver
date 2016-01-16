@@ -33,9 +33,9 @@ public class S3Resolver extends RepositoryResolver {
 		setRepository(new S3Repository(accessKey, secretKey, overwrite, region));
 	}
 
-	public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl) {
+	public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
 		setName(name);
-		setRepository(new S3Repository(accessKey, secretKey, overwrite, region, acl));
+		setRepository(new S3Repository(accessKey, secretKey, overwrite, region, acl,serverSideEncryption));
 	}
 
 	public S3Resolver(String name, AWSCredentialsProvider credentialsProvider, boolean overwrite, Region region) {
@@ -43,9 +43,9 @@ public class S3Resolver extends RepositoryResolver {
 		setRepository(new S3Repository(credentialsProvider, overwrite, region));
 	}
 
-	public S3Resolver(String name, AWSCredentialsProvider credentialsProvider, boolean overwrite, Region region, CannedAccessControlList acl) {
+	public S3Resolver(String name, AWSCredentialsProvider credentialsProvider, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
 		setName(name);
-		setRepository(new S3Repository(credentialsProvider, overwrite, region, acl));
+		setRepository(new S3Repository(credentialsProvider, overwrite, region, acl,serverSideEncryption));
 	}
 
 	public String getTypeName() {

@@ -54,13 +54,15 @@ public class S3Repository extends AbstractRepository {
 
 	private boolean overwrite;
 
+	private boolean serverSideEncryption;
+
 	private CannedAccessControlList acl;
 
 	public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region) {
-		this(accessKey, secretKey, overwrite, region, CannedAccessControlList.PublicRead);
+		this(accessKey, secretKey, overwrite, region, CannedAccessControlList.PublicRead,false);
 	}
 
-	public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl) {
+	public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
 		AWSCredentialsProvider provider = new InstanceProfileCredentialsProvider();
 		try {
 			provider.getCredentials();
@@ -72,17 +74,19 @@ public class S3Repository extends AbstractRepository {
 		this.overwrite = overwrite;
 		this.region = region;
 		this.acl = acl;
+		this.serverSideEncryption = serverSideEncryption;
 	}
 
 	public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region) {
-		this(provider, overwrite, region, CannedAccessControlList.PublicRead);
+		this(provider, overwrite, region, CannedAccessControlList.PublicRead,false);
 	}
 
-	public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region, CannedAccessControlList acl) {
+	public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
 		s3Client = new AmazonS3Client(provider);
 		this.overwrite = overwrite;
 		this.region = region;
 		this.acl = acl;
+		this.serverSideEncryption = serverSideEncryption;
 	}
 
 	public void get(String source, File destination) {
@@ -184,6 +188,12 @@ public class S3Repository extends AbstractRepository {
 		// System.out.println("publishing: bucket=" + bucket + " key=" + key);
 		PutObjectRequest request = new PutObjectRequest(bucket ,key, source);
 		request = request.withCannedAcl(acl);
+
+		if (serverSideEncryption) {
+			ObjectMetadata objectMetadata = new ObjectMetadata();
+			objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+			request.setMetadata(objectMetadata);
+		}
 
 		if (!getS3Client().doesBucketExist(bucket)) {
 			if(!createBucket(bucket, region)) {
