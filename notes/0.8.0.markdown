@@ -1,0 +1,2 @@
+* [@pityka](https://github.com/pityka) has added support for server side encryption (see #11)
+* Upgraded to `aws-java-sdk-s3` v1.10.47
