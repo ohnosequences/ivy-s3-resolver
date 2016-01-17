@@ -18,7 +18,7 @@ Normally you won't use this resolver directly, see [sbt-s3-resolver](https://git
 
 ### API documentation
 
-- [`v0.7.0`](http://ohnosequences.com/ivy-s3-resolver/docs/api/0.7.0/)
+- [`v0.8.0`](http://ohnosequences.com/ivy-s3-resolver/docs/api/0.8.0/)
 
 
 ### Contacts
