@@ -18,7 +18,7 @@ package ohnosequences.ivy;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import org.apache.ivy.plugins.resolver.RepositoryResolver;
-import com.amazonaws.services.s3.model.Region;
+import com.amazonaws.regions.Region;
 
 /**
  * A dependency resolver that looks to an S3 repository to resolve dependencies.
@@ -28,11 +28,21 @@ import com.amazonaws.services.s3.model.Region;
  */
 public class S3Resolver extends RepositoryResolver {
 
+  /**
+   * @deprecated
+   * Use constructor with AWSCredentialsProvider instead
+   */
+  @Deprecated
   public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region) {
     setName(name);
     setRepository(new S3Repository(accessKey, secretKey, overwrite, region));
   }
 
+  /**
+   * @deprecated
+   * Use constructor with AWSCredentialsProvider instead
+   */
+  @Deprecated
   public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
     setName(name);
     setRepository(new S3Repository(accessKey, secretKey, overwrite, region, acl,serverSideEncryption));
