@@ -26,7 +26,8 @@ import java.util.Map;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.*;
-import com.amazonaws.internal.*;
+// import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.s3.*;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import org.apache.ivy.plugins.repository.AbstractRepository;
@@ -46,7 +47,7 @@ import org.apache.ivy.util.Message;
  */
 public class S3Repository extends AbstractRepository {
 
-  private AmazonS3Client s3Client;
+  private AmazonS3 s3Client;
 
   private Map<String, S3Resource> resourceCache = new HashMap<String, S3Resource>();
 
@@ -58,31 +59,37 @@ public class S3Repository extends AbstractRepository {
 
   private CannedAccessControlList acl;
 
+  /**
+   * @deprecated
+   * Use constructor with AWSCredentialsProvider instead
+   */
+  @Deprecated
   public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region) {
     this(accessKey, secretKey, overwrite, region, CannedAccessControlList.PublicRead,false);
   }
 
+  /**
+   * @deprecated
+   * Use constructor with AWSCredentialsProvider instead
+   */
+  @Deprecated
   public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
-    AWSCredentialsProvider provider = new InstanceProfileCredentialsProvider();
+    AWSCredentialsProvider provider = InstanceProfileCredentialsProvider.getInstance();
     try {
       provider.getCredentials();
     } catch (AmazonClientException e1) {
-      provider = new StaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+      provider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
     }
 
-    s3Client = new AmazonS3Client(provider);
-    this.overwrite = overwrite;
-    this.region = region;
-    this.acl = acl;
-    this.serverSideEncryption = serverSideEncryption;
+    new S3Repository(provider, overwrite, region, acl, serverSideEncryption);
   }
 
   public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region) {
-    this(provider, overwrite, region, CannedAccessControlList.PublicRead,false);
+    this(provider, overwrite, region, CannedAccessControlList.PublicRead, false);
   }
 
   public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
-    s3Client = new AmazonS3Client(provider);
+    s3Client = AmazonS3Client.builder().standard().withCredentials(provider).withRegion(region.toString()).build();
     this.overwrite = overwrite;
     this.region = region;
     this.acl = acl;
@@ -155,7 +162,8 @@ public class S3Repository extends AbstractRepository {
     }
   }
 
-  private boolean createBucket(String name, Region region) {
+  // TODO: remove this in favor of the direct SDK method usage
+  private boolean createBucket(String name) {
     int attemptLimit = 5;
     int timeout = 1000 * 20;
     int attempt = 0;
@@ -164,7 +172,7 @@ public class S3Repository extends AbstractRepository {
       try {
         attempt++;
 
-        getS3Client().createBucket(name, region);
+        getS3Client().createBucket(name);
         if(getS3Client().doesBucketExist(name)) {
           return true;
         }
@@ -196,7 +204,7 @@ public class S3Repository extends AbstractRepository {
     }
 
     if (!getS3Client().doesBucketExist(bucket)) {
-      if(!createBucket(bucket, region)) {
+      if(!createBucket(bucket)) {
         throw new Error("couldn't create bucket");
       }
     }
@@ -208,7 +216,7 @@ public class S3Repository extends AbstractRepository {
 
   }
 
-  public AmazonS3Client getS3Client() {
+  public AmazonS3 getS3Client() {
     return s3Client;
   }
 
