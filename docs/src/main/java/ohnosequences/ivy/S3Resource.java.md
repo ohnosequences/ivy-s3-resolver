@@ -27,7 +27,7 @@ import org.apache.ivy.plugins.repository.Resource;
 
 /**
  * A Resource implementation that extracts its data from an S3 resource.
- * 
+ *
  * @author Ben Hale
  * @author Evdokim Kovach
  */
@@ -35,82 +35,82 @@ public class S3Resource implements Resource {
 
     private S3Repository s3Repo;
 
-	private String bucket;
+  private String bucket;
 
-	private String key;
+  private String key;
 
-	private boolean exists;
+  private boolean exists;
 
-	private long contentLength;
+  private long contentLength;
 
-	private long lastModified;
+  private long lastModified;
 
-	private String name;
+  private String name;
 
 
 
-	public S3Resource(S3Repository s3Repo, String uri) {
-		this.s3Repo = s3Repo;
-		initializeS3(uri);
-		initalizeResource();
-		this.name = uri;
-	}
+  public S3Resource(S3Repository s3Repo, String uri) {
+    this.s3Repo = s3Repo;
+    initializeS3(uri);
+    initalizeResource();
+    this.name = uri;
+  }
 
-	public Resource clone(String newUri) {
-		return new S3Resource(s3Repo, newUri);
-	}
+  public Resource clone(String newUri) {
+    return new S3Resource(s3Repo, newUri);
+  }
 
-	public boolean exists() {
-		return exists;
-	}
+  public boolean exists() {
+    return exists;
+  }
 
-	public long getContentLength() {
-		return contentLength;
-	}
+  public long getContentLength() {
+    return contentLength;
+  }
 
-	public long getLastModified() {
-		return lastModified;
-	}
+  public long getLastModified() {
+    return lastModified;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public boolean isLocal() {
-		return false;
-	}
+  public boolean isLocal() {
+    return false;
+  }
 
-	public InputStream openStream() {
-		try {
+  public InputStream openStream() {
+    try {
             return s3Repo.getS3Client().getObject(bucket, key).getObjectContent();
-		}
-		catch (AmazonServiceException e) {
-			throw new S3RepositoryException(e);
-		}
-	}
+    }
+    catch (AmazonServiceException e) {
+      throw new S3RepositoryException(e);
+    }
+  }
 
-	private void initializeS3(String uri) {
-		this.bucket = S3Utils.getBucket(uri);
-		this.key = S3Utils.getKey(uri);
-	}
+  private void initializeS3(String uri) {
+    this.bucket = S3Utils.getBucket(uri);
+    this.key = S3Utils.getKey(uri);
+  }
 
-	private void initalizeResource() {
-		try {
-			// System.out.println("trying to resolve bucket=" + bucket + " key=" + key);
-			ObjectMetadata metadata = s3Repo.getS3Client().getObjectMetadata(bucket, key);
+  private void initalizeResource() {
+    try {
+      // System.out.println("trying to resolve bucket=" + bucket + " key=" + key);
+      ObjectMetadata metadata = s3Repo.getS3Client().getObjectMetadata(bucket, key);
 
-			this.exists = true;
-			this.contentLength = metadata.getContentLength();
-			this.lastModified = metadata.getLastModified().getTime();
-			
-		}
-		catch (AmazonServiceException e) {
-			this.exists = false;
-			this.contentLength = 0;
-			this.lastModified = 0;
-			this.name = "";
-		}
-	}
+      this.exists = true;
+      this.contentLength = metadata.getContentLength();
+      this.lastModified = metadata.getLastModified().getTime();
+
+    }
+    catch (AmazonServiceException e) {
+      this.exists = false;
+      this.contentLength = 0;
+      this.lastModified = 0;
+      this.name = "";
+    }
+  }
 
 }
 
