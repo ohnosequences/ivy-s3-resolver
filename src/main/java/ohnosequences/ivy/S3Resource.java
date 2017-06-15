@@ -110,4 +110,8 @@ public class S3Resource implements Resource {
     }
   }
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }
