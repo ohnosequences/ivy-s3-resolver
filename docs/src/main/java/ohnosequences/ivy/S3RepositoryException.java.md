@@ -20,34 +20,21 @@ package ohnosequences.ivy;
 /**
  * A runtime wrapper exception for S3 exceptions thrown in the
  * {@link S3Repository}.
- * 
+ *
  * @author Ben Hale
  */
 public class S3RepositoryException extends RuntimeException {
 
-	public S3RepositoryException(Throwable throwable) {
-		super(throwable);
-	}
+  public S3RepositoryException(Throwable throwable) {
+    super(throwable);
+  }
 
 }
 
 ```
 
 
-------
 
-### Index
-
-+ src
-  + main
-    + java
-      + ohnosequences
-        + ivy
-          + [S3Repository.java][main/java/ohnosequences/ivy/S3Repository.java]
-          + [S3RepositoryException.java][main/java/ohnosequences/ivy/S3RepositoryException.java]
-          + [S3Resolver.java][main/java/ohnosequences/ivy/S3Resolver.java]
-          + [S3Resource.java][main/java/ohnosequences/ivy/S3Resource.java]
-          + [S3Utils.java][main/java/ohnosequences/ivy/S3Utils.java]
 
 [main/java/ohnosequences/ivy/S3Repository.java]: S3Repository.java.md
 [main/java/ohnosequences/ivy/S3RepositoryException.java]: S3RepositoryException.java.md

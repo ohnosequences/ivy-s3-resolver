@@ -18,13 +18,13 @@ package ohnosequences.ivy;
 /**
  * A runtime wrapper exception for S3 exceptions thrown in the
  * {@link S3Repository}.
- * 
+ *
  * @author Ben Hale
  */
 public class S3RepositoryException extends RuntimeException {
 
-	public S3RepositoryException(Throwable throwable) {
-		super(throwable);
-	}
+  public S3RepositoryException(Throwable throwable) {
+    super(throwable);
+  }
 
 }

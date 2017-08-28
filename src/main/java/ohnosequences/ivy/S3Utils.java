@@ -21,44 +21,44 @@ import java.net.URISyntaxException;
 
 /**
  * A utility class for parsing full URIs into S3 component parts.
- * 
+ *
  * @author Ben Hale
  * @author Evdokim Kovach
  */
 public class S3Utils {
 
-	/**
-	 * Parses the S3 bucket from a properly formed S3 URI.
-	 * @param uri The URI to parse
-	 * @return An S3 bucket for the given URI
-	 */
-	public static String getBucket(String uri) {
-		//System.out.print("parsing bucket from uri " + uri);
-		String bucket = getUri(uri).getHost();
-		// System.out.println(" bucket=" + bucket);
-		return bucket;
-	}
+  /**
+   * Parses the S3 bucket from a properly formed S3 URI.
+   * @param uri The URI to parse
+   * @return An S3 bucket for the given URI
+   */
+  public static String getBucket(String uri) {
+    //System.out.print("parsing bucket from uri " + uri);
+    String bucket = getUri(uri).getHost();
+    // System.out.println(" bucket=" + bucket);
+    return bucket;
+  }
 
-	/**
-	 * Parses the S3 key name from a properly formed S3URI.
-	 * @param uri The URI to parse
-	 * @return An S3 key name for the given URI
-	 */
-	public static String getKey(String uri) {
-		//System.out.print("parsing key from uri " + uri);
-		String key = getUri(uri).getPath().substring(1);
-		// System.out.println(" key=" + key);
-		return key;
-	}
+  /**
+   * Parses the S3 key name from a properly formed S3URI.
+   * @param uri The URI to parse
+   * @return An S3 key name for the given URI
+   */
+  public static String getKey(String uri) {
+    //System.out.print("parsing key from uri " + uri);
+    String key = getUri(uri).getPath().substring(1);
+    // System.out.println(" key=" + key);
+    return key;
+  }
 
-	private static URI getUri(String uri) {
+  private static URI getUri(String uri) {
 
-		try {
-			return new URI(uri);
-		}
-		catch (URISyntaxException e) {
-			throw new IllegalArgumentException("'" + uri + "' is a malformed S3 URI");
-		}
-	}
+    try {
+      return new URI(uri);
+    }
+    catch (URISyntaxException e) {
+      throw new IllegalArgumentException("'" + uri + "' is a malformed S3 URI");
+    }
+  }
 
 }
