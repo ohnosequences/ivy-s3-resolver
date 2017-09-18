@@ -5,7 +5,7 @@ organization := "ohnosequences"
 
 bucketSuffix := "era7.com"
 
-javaVersion := "1.7"
+javaVersion := "1.8"
 javacOptions ++= Seq(
   "-Xlint:deprecation"
 )

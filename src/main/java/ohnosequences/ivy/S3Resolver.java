@@ -28,26 +28,6 @@ import com.amazonaws.regions.Region;
  */
 public class S3Resolver extends RepositoryResolver {
 
-  /**
-   * @deprecated
-   * Use constructor with AWSCredentialsProvider instead
-   */
-  @Deprecated
-  public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region) {
-    setName(name);
-    setRepository(new S3Repository(accessKey, secretKey, overwrite, region));
-  }
-
-  /**
-   * @deprecated
-   * Use constructor with AWSCredentialsProvider instead
-   */
-  @Deprecated
-  public S3Resolver(String name, String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
-    setName(name);
-    setRepository(new S3Repository(accessKey, secretKey, overwrite, region, acl,serverSideEncryption));
-  }
-
   public S3Resolver(String name, AWSCredentialsProvider credentialsProvider, boolean overwrite, Region region) {
     setName(name);
     setRepository(new S3Repository(credentialsProvider, overwrite, region));
