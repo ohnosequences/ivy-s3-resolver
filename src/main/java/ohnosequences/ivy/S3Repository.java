@@ -44,7 +44,6 @@ import org.apache.ivy.util.FileUtil;
 import org.apache.ivy.util.Message;
 
 
-
 /**
  * A repository the allows you to upload and download from an S3 repository.
  *
@@ -78,32 +77,24 @@ public class S3Repository extends AbstractRepository {
   }
 
   public void get(String source, File destination) {
-    //System.out.println("get source=" + source + " dst=" + destination.getPath());
     Resource resource = getResource(source);
     try {
       fireTransferInitiated(resource, TransferEvent.REQUEST_GET);
       RepositoryCopyProgressListener progressListener = new RepositoryCopyProgressListener(this);
       progressListener.setTotalLength(resource.getContentLength());
       FileUtil.copy(resource.openStream(), new FileOutputStream(destination), progressListener);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       fireTransferError(e);
       throw new Error(e);
-    }
-    catch (RuntimeException e) {
+    } catch (RuntimeException e) {
       fireTransferError(e);
       throw e;
-    }
-    finally {
+    } finally {
       fireTransferCompleted(resource.getContentLength());
     }
   }
 
   public Resource getResource(String source) {
-    // if (!source.startsWith("s3:")) {
-    //   return new org.apache.ivy.plugins.repository.BasicResource("", false, 0, 0, false);
-    // }
-    //System.out.println("getResource> " + source);
     if (!resourceCache.containsKey(source)) {
       resourceCache.put(source, new S3Resource(this, source));
     }
@@ -137,8 +128,7 @@ public class S3Repository extends AbstractRepository {
       } while (marker != null);
 
       return keys;
-    }
-    catch (AmazonServiceException e) {
+    } catch (AmazonServiceException e) {
       throw new S3RepositoryException(e);
     }
   }
@@ -157,13 +147,11 @@ public class S3Repository extends AbstractRepository {
         if(getS3Client().doesBucketExist(name)) {
           return true;
         }
-
       } catch(AmazonS3Exception s3e) {
         try {
           Message.warn(s3e.toString());
           Thread.sleep(timeout);
-        } catch (InterruptedException e) {
-        }
+        } catch (InterruptedException e) {}
       }
     }
     return false;
@@ -171,12 +159,12 @@ public class S3Repository extends AbstractRepository {
 
   @Override
   protected void put(File source, String destination, boolean overwrite) {
-    //System.out.print("parent> ");
     String bucket = S3Utils.getBucket(destination);
     String key = S3Utils.getKey(destination);
-    // System.out.println("publishing: bucket=" + bucket + " key=" + key);
-    PutObjectRequest request = new PutObjectRequest(bucket ,key, source);
-    request = request.withCannedAcl(acl);
+
+    PutObjectRequest request =
+      new PutObjectRequest(bucket, key, source)
+        .withCannedAcl(acl);
 
     if (serverSideEncryption) {
       ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -186,7 +174,7 @@ public class S3Repository extends AbstractRepository {
 
     if (!getS3Client().doesBucketExist(bucket)) {
       if(!createBucket(bucket)) {
-        throw new Error("couldn't create bucket");
+        throw new Error("Couldn't create bucket");
       }
     }
 
@@ -194,7 +182,6 @@ public class S3Repository extends AbstractRepository {
       throw new Error(destination + " exists but overwriting is disabled");
     }
     getS3Client().putObject(request);
-
   }
 
   public AmazonS3 getS3Client() {

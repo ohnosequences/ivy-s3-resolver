@@ -33,9 +33,7 @@ public class S3Utils {
    * @return An S3 bucket for the given URI
    */
   public static String getBucket(String uri) {
-    //System.out.print("parsing bucket from uri " + uri);
     String bucket = getUri(uri).getHost();
-    // System.out.println(" bucket=" + bucket);
     return bucket;
   }
 
@@ -45,18 +43,14 @@ public class S3Utils {
    * @return An S3 key name for the given URI
    */
   public static String getKey(String uri) {
-    //System.out.print("parsing key from uri " + uri);
     String key = getUri(uri).getPath().substring(1);
-    // System.out.println(" key=" + key);
     return key;
   }
 
   private static URI getUri(String uri) {
-
     try {
       return new URI(uri);
-    }
-    catch (URISyntaxException e) {
+    } catch (URISyntaxException e) {
       throw new IllegalArgumentException("'" + uri + "' is a malformed S3 URI");
     }
   }
