@@ -65,31 +65,6 @@ public class S3Repository extends AbstractRepository {
 
   private CannedAccessControlList acl;
 
-  /**
-   * @deprecated
-   * Use constructor with AWSCredentialsProvider instead
-   */
-  @Deprecated
-  public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region) {
-    this(accessKey, secretKey, overwrite, region, CannedAccessControlList.PublicRead,false);
-  }
-
-  /**
-   * @deprecated
-   * Use constructor with AWSCredentialsProvider instead
-   */
-  @Deprecated
-  public S3Repository(String accessKey, String secretKey, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
-    AWSCredentialsProvider provider = InstanceProfileCredentialsProvider.getInstance();
-    try {
-      provider.getCredentials();
-    } catch (AmazonClientException e1) {
-      provider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
-    }
-
-    new S3Repository(provider, overwrite, region, acl, serverSideEncryption);
-  }
-
   public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region) {
     this(provider, overwrite, region, CannedAccessControlList.PublicRead, false);
   }
