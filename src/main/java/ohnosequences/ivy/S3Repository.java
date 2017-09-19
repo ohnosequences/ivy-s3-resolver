@@ -31,6 +31,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.StorageClass;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -64,16 +65,41 @@ public class S3Repository extends AbstractRepository {
 
   private CannedAccessControlList acl;
 
-  public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region) {
-    this(provider, overwrite, region, CannedAccessControlList.PublicRead, false);
+  private StorageClass storageClass;
+
+
+  public S3Repository(
+    AWSCredentialsProvider provider,
+    boolean overwrite,
+    Region region
+  ) {
+    this(
+      provider,
+      overwrite,
+      region,
+      CannedAccessControlList.PublicRead,
+      false,
+      StorageClass.Standard
+    );
   }
 
-  public S3Repository(AWSCredentialsProvider provider, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
-    s3Client = AmazonS3Client.builder().standard().withCredentials(provider).withRegion(region.toString()).build();
+  public S3Repository(
+    AWSCredentialsProvider provider,
+    boolean overwrite,
+    Region region,
+    CannedAccessControlList acl,
+    boolean serverSideEncryption,
+    StorageClass storageClass
+  ) {
+    s3Client = AmazonS3Client.builder().standard()
+      .withCredentials(provider)
+      .withRegion(region.toString())
+      .build();
     this.overwrite = overwrite;
     this.region = region;
     this.acl = acl;
     this.serverSideEncryption = serverSideEncryption;
+    this.storageClass = storageClass;
   }
 
   public void get(String source, File destination) {
@@ -164,6 +190,7 @@ public class S3Repository extends AbstractRepository {
 
     PutObjectRequest request =
       new PutObjectRequest(bucket, key, source)
+        .withStorageClass(storageClass)
         .withCannedAcl(acl);
 
     if (serverSideEncryption) {
