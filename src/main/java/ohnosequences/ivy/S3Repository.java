@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.*;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
@@ -56,8 +55,6 @@ public class S3Repository extends AbstractRepository {
   private AmazonS3 s3Client;
 
   private Map<String, S3Resource> resourceCache = new HashMap<String, S3Resource>();
-
-  private Region region;
 
   private boolean overwrite;
 
@@ -96,7 +93,6 @@ public class S3Repository extends AbstractRepository {
       .withRegion(region.toString())
       .build();
     this.overwrite = overwrite;
-    this.region = region;
     this.acl = acl;
     this.serverSideEncryption = serverSideEncryption;
     this.storageClass = storageClass;
