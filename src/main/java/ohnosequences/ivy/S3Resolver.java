@@ -17,6 +17,7 @@ package ohnosequences.ivy;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.StorageClass;
 import org.apache.ivy.plugins.resolver.RepositoryResolver;
 import com.amazonaws.regions.Region;
 
@@ -33,9 +34,24 @@ public class S3Resolver extends RepositoryResolver {
     setRepository(new S3Repository(credentialsProvider, overwrite, region));
   }
 
-  public S3Resolver(String name, AWSCredentialsProvider credentialsProvider, boolean overwrite, Region region, CannedAccessControlList acl, boolean serverSideEncryption) {
+  public S3Resolver(
+    String name,
+    AWSCredentialsProvider credentialsProvider,
+    boolean overwrite,
+    Region region,
+    CannedAccessControlList acl,
+    boolean serverSideEncryption,
+    StorageClass storageClass
+  ) {
     setName(name);
-    setRepository(new S3Repository(credentialsProvider, overwrite, region, acl,serverSideEncryption));
+    setRepository(new S3Repository(
+      credentialsProvider,
+      overwrite,
+      region,
+      acl,
+      serverSideEncryption,
+      storageClass
+    ));
   }
 
   public String getTypeName() {
