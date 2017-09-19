@@ -15,6 +15,8 @@ libraryDependencies ++= Seq(
   "org.apache.ivy" % "ivy" % "2.4.0"
 )
 
+licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0"))
+
 bintrayReleaseOnPublish := true
 bintrayOrganization := Some(organization.value)
 bintrayPackageLabels := Seq("ivy", "s3", "resolver")
