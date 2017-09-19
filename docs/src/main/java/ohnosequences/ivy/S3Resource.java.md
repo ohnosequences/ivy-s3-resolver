@@ -33,7 +33,7 @@ import org.apache.ivy.plugins.repository.Resource;
  */
 public class S3Resource implements Resource {
 
-    private S3Repository s3Repo;
+  private S3Repository s3Repo;
 
   private String bucket;
 
@@ -82,9 +82,8 @@ public class S3Resource implements Resource {
 
   public InputStream openStream() {
     try {
-            return s3Repo.getS3Client().getObject(bucket, key).getObjectContent();
-    }
-    catch (AmazonServiceException e) {
+      return s3Repo.getS3Client().getObject(bucket, key).getObjectContent();
+    } catch (AmazonServiceException e) {
       throw new S3RepositoryException(e);
     }
   }
@@ -96,15 +95,12 @@ public class S3Resource implements Resource {
 
   private void initalizeResource() {
     try {
-      // System.out.println("trying to resolve bucket=" + bucket + " key=" + key);
       ObjectMetadata metadata = s3Repo.getS3Client().getObjectMetadata(bucket, key);
 
       this.exists = true;
       this.contentLength = metadata.getContentLength();
       this.lastModified = metadata.getLastModified().getTime();
-
-    }
-    catch (AmazonServiceException e) {
+    } catch (AmazonServiceException e) {
       this.exists = false;
       this.contentLength = 0;
       this.lastModified = 0;
