@@ -117,6 +117,7 @@ public class S3Repository extends AbstractRepository {
   }
 
   public Resource getResource(String source) {
+    /* For ohnosequences/sbt-s3-resolver#52, has the effect of cleaning up redundant path delimiters (thereby fixing invalid S3 object keys). */
     source = java.net.URI.create(source).normalize().toString();
     if (!resourceCache.containsKey(source)) {
       resourceCache.put(source, new S3Resource(this, source));
