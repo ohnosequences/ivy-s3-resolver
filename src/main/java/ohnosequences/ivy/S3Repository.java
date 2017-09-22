@@ -117,6 +117,7 @@ public class S3Repository extends AbstractRepository {
   }
 
   public Resource getResource(String source) {
+    source = java.net.URI.create(source).normalize().toString();
     if (!resourceCache.containsKey(source)) {
       resourceCache.put(source, new S3Resource(this, source));
     }
