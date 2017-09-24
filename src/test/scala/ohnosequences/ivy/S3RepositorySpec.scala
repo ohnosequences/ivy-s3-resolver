@@ -53,12 +53,12 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
   "Get source" must {
     /** Work-around for paulbutcher/ScalaMock#114. */
     abstract class MockableResource extends Resource {
-      override def clone(cloneName: String): Resource = ???
+      override def clone(cloneName: String): Resource = this
     }
 
     s"use factory-provided ${classOf[Resource].getName}" in {
       val resource = mock[MockableResource]
-      val repository = new S3MockableRepository(null) {
+      val repository = new S3MockableRepository(mock[AmazonS3]) {
         override def getResource(source: String) = resource
       }
 
