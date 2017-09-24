@@ -78,53 +78,47 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
   /* Verifies listing normalizes the object key, and marshals results from the client correctly. */
   /* TODO: Verify correct iteration over subsequent markers. */
   "List parent" when {
+    Scenarios.locationWithBucketNameAndObjectKeys foreach {
+      case (given, (bucketName, objectKey)) =>
+        s"""given "$given"""" must {
+          "request objects" in {
+            val client = mock[AmazonS3]
 
-    val scenarios =
-      ("s3://bucket/p0/p1", ("bucket", "p0/p1")) ::
-        ("s3://bucket/p0//p1", ("bucket", "p0/p1")) ::
-        Nil
-
-    scenarios foreach { case (given, (bucketName, objectKey)) =>
-      s"""given "$given"""" must {
-        "request objects" in {
-          val client = mock[AmazonS3]
-
-          val requestPredicate = { request: ListObjectsRequest =>
-            bucketName == request.getBucketName &&
-              objectKey == request.getPrefix
-          }
-
-          val directories =
-            objectKey + "/ivys" ::
-              objectKey + "/jars" ::
-              Nil
-
-          val files =
-            for {
-              directory <- directories
-              file <- "fileA" :: "fileB" :: Nil
-            } yield directory + "/" + file
-
-          (client.listObjects(_: ListObjectsRequest)).expects(where(requestPredicate)).once() returns {
-            val listing = mock[ObjectListing]
-            (listing.getCommonPrefixes _).expects().once().returns(directories)
-            (listing.getObjectSummaries _).expects().once() returns {
-              files map { file =>
-                val summary = mock[S3ObjectSummary]
-                (summary.getKey _).expects().once().returns(file)
-                summary
-              }
+            val requestPredicate = { request: ListObjectsRequest =>
+              bucketName == request.getBucketName &&
+                objectKey == request.getPrefix
             }
-            (listing.getNextMarker _).expects().once().returns(null)
-            listing
+
+            val directories =
+              objectKey + "/ivys" ::
+                objectKey + "/jars" ::
+                Nil
+
+            val files =
+              for {
+                directory <- directories
+                file <- "fileA" :: "fileB" :: Nil
+              } yield directory + "/" + file
+
+            (client.listObjects(_: ListObjectsRequest)).expects(where(requestPredicate)).once() returns {
+              val listing = mock[ObjectListing]
+              (listing.getCommonPrefixes _).expects().once().returns(directories)
+              (listing.getObjectSummaries _).expects().once() returns {
+                files map { file =>
+                  val summary = mock[S3ObjectSummary]
+                  (summary.getKey _).expects().once().returns(file)
+                  summary
+                }
+              }
+              (listing.getNextMarker _).expects().once().returns(null)
+              listing
+            }
+
+            val repository = new S3MockableRepository(client)
+            repository.list(given) should contain theSameElementsAs directories ++ files
           }
-
-          val repository = new S3MockableRepository(client)
-          repository.list(given) should contain theSameElementsAs directories ++ files
         }
-      }
     }
-
   }
 
 }

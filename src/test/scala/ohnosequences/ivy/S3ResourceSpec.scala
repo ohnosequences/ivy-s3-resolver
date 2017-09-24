@@ -17,43 +17,38 @@ class S3ResourceSpec extends WordSpec with Matchers
   with PrivateMethodTester {
 
   "Constructor" when {
+    Scenarios.locationWithBucketNameAndObjectKeys foreach {
+      case (given, (bucketName, objectKey)) =>
+        s"""given source "$given"""" must {
+          "initialize properties correctly" in {
+            val repository = mock[S3MockableRepository]
 
-    val scenarios =
-      ("s3://bucket/p0/p1", ("bucket", "p0/p1")) ::
-        ("s3://bucket/p0//p1", ("bucket", "p0/p1")) ::
-        Nil
+            val contentLength = Random.nextInt
+            val lastModified = Random.nextLong
 
-    scenarios foreach { case (given, (bucketName, objectKey)) =>
-      s"""given source "$given"""" must {
-        "initialize properties correctly" in {
-          val repository = mock[S3MockableRepository]
+            (repository.getS3Client _).expects().once() returns {
+              val client = mock[AmazonS3]
 
-          val contentLength = Random.nextInt
-          val lastModified = Random.nextLong
-
-          (repository.getS3Client _).expects().once() returns {
-            val client = mock[AmazonS3]
-
-            /* Verifies correct object key normalization. */
-            (client.getObjectMetadata(_: String, _: String)).expects(bucketName, objectKey).once() returns {
-              val metadata = mock[ObjectMetadata]
-              (metadata.getContentLength _).expects().once().returns(contentLength)
-              (metadata.getLastModified _).expects().once().returns(new Date(lastModified))
-              metadata
+              /* Verifies correct object key normalization. */
+              (client.getObjectMetadata(_: String, _: String)).expects(bucketName, objectKey).once() returns {
+                val metadata = mock[ObjectMetadata]
+                (metadata.getContentLength _).expects().once().returns(contentLength)
+                (metadata.getLastModified _).expects().once().returns(new Date(lastModified))
+                metadata
+              }
+              client
             }
-            client
+
+            val resource = new S3Resource(repository, given)
+
+            resource should have(
+              'exists (true),
+              'getContentLength (contentLength),
+              'getLastModified (lastModified),
+              'getName (given)
+            )
           }
-
-          val resource = new S3Resource(repository, given)
-
-          resource should have(
-            'exists (true),
-            'getContentLength (contentLength),
-            'getLastModified (lastModified),
-            'getName (given)
-          )
         }
-      }
     }
 
   }
