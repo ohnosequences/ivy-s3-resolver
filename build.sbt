@@ -16,7 +16,13 @@ libraryDependencies ++= Seq(
 )
 
 /* Be more permissive for test code. */
-wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.AsInstanceOf, Wart.DefaultArguments, Wart.NonUnitStatements, Wart.Null)
+wartremoverErrors in(Test, compile) --= Seq(
+  Wart.Any,
+  Wart.AsInstanceOf,
+  Wart.DefaultArguments,
+  Wart.NonUnitStatements,
+  Wart.Null
+)
 
 libraryDependencies ++= Seq(
   "com.github.pathikrit" %% "better-files" % "2.17.1" % Test,
