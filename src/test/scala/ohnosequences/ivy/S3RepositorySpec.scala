@@ -27,13 +27,13 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
   "Resource factory" must {
     s"return ${classOf[S3Resource].getName} instance" which {
       "is cached with memoization" in {
-        val bucketName = Random.nextString(5)
-        val objectKey = Stream.fill(2)(Random.nextString(5)).mkString("/")
+        val bucketName = "bucketName"
+        val objectKey = Random.nextString(5)
         val source = s"s3://$bucketName/$objectKey"
 
         val client = mock[AmazonS3]
 
-        (client.getObjectMetadata(_: String, _: String)).expects(*, objectKey).once() returns {
+        (client.getObjectMetadata(_: String, _: String)).expects(bucketName, objectKey).once() returns {
           val metadata = mock[ObjectMetadata]
           (metadata.getContentLength _).expects().once().returns(0)
           (metadata.getLastModified _).expects().once().returns(new Date)
