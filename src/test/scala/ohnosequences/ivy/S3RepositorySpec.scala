@@ -19,11 +19,6 @@ import scala.util.Random
 class S3RepositorySpec extends WordSpec with Matchers with Inside
   with MockFactory {
 
-  /** Work-around for paulbutcher/ScalaMock#114. */
-  abstract class TestResource extends Resource {
-    override def clone(cloneName: String): Resource = ???
-  }
-
   "Resource factory" must {
     s"return ${classOf[S3Resource].getName} instance" which {
       "is cached with memoization" in {
@@ -33,6 +28,7 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
 
         val client = mock[AmazonS3]
 
+        /* Overlaps somewhat with tests for S3Resource itself because of a non-trivial constructor. */
         (client.getObjectMetadata(_: String, _: String)).expects(bucketName, objectKey).once() returns {
           val metadata = mock[ObjectMetadata]
           (metadata.getContentLength _).expects().once().returns(0)
@@ -55,22 +51,28 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
    * As of this writing, only ensure the getResource method is called and bytes it provides are written to the destination, which produces a Resource instance that's tested independently with correct URI handling.
    */
   "Get source" must {
+    /** Work-around for paulbutcher/ScalaMock#114. */
+    abstract class MockableResource extends Resource {
+      override def clone(cloneName: String): Resource = ???
+    }
+
+
     s"use factory-provided ${classOf[Resource].getName}" in {
-      val resource = mock[TestResource]
+      val resource = mock[MockableResource]
       val repository = new S3MockableRepository(null) {
         override def getResource(source: String) = resource
       }
 
-      val content = new StringInputStream(Random.nextString(100))
+      val content = Random.nextString(100)
 
       (resource.getName _).expects().once().returns(Random.nextString(10))
-      (resource.getContentLength _).expects().atLeastOnce().returns(content.getString.getBytes(UTF8).length)
-      (resource.openStream _).expects().once().returns(content)
+      (resource.getContentLength _).expects().atLeastOnce().returns(content.getBytes(UTF8).length)
+      (resource.openStream _).expects().once().returns(new StringInputStream(content))
 
       val destination = File.newTemporaryFile()
       repository.get("", destination.toJava)
 
-      destination.contentAsString should be(content.getString)
+      destination.contentAsString should be(content)
     }
   }
 
