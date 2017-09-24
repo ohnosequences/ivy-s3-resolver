@@ -4,7 +4,7 @@ import java.util.Date
 
 import better.files._
 import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.model.{ListObjectsRequest, ObjectListing, ObjectMetadata, S3ObjectSummary}
+import com.amazonaws.services.s3.model._
 import com.amazonaws.util.StringInputStream
 import com.amazonaws.util.StringUtils.UTF8
 import org.apache.ivy.plugins.repository.Resource
@@ -81,7 +81,7 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
     Scenarios.locationWithBucketNameAndObjectKeys foreach {
       case (given, (bucketName, objectKey)) =>
         s"""given "$given"""" must {
-          "request objects" in {
+          "list objects" in {
             val client = mock[AmazonS3]
 
             val requestPredicate = { request: ListObjectsRequest =>
@@ -116,6 +116,36 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
 
             val repository = new S3MockableRepository(client)
             repository.list(given) should contain theSameElementsAs directories ++ files
+          }
+        }
+    }
+  }
+
+  /* TODO: Test storage class. */
+  /* TODO: Test ACL assignment. */
+  /* TODO: Test encryption. */
+  /* TODO: Test overwrite. */
+  /* TODO: Test bucket creation. */
+  "Put source to destination" when {
+    val content = Random.nextString(100)
+    val source = File.newTemporaryFile().overwrite(content)
+
+    Scenarios.locationWithBucketNameAndObjectKeys foreach {
+      case (given, (bucketName, objectKey)) =>
+        s"""given "$given"""" must {
+          "put objects" in {
+            val client = mock[AmazonS3]
+
+            val requestPredicate = { request: PutObjectRequest =>
+              bucketName == request.getBucketName &&
+                objectKey == request.getKey
+            }
+
+            (client.doesBucketExist _).expects(bucketName).once().returns(true)
+            (client.putObject(_: PutObjectRequest)).expects(where(requestPredicate))
+
+            val repository = new S3MockableRepository(client)
+            repository.put(source.toJava, given, true)
           }
         }
     }
