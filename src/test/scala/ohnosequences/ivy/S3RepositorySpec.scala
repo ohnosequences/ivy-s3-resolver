@@ -47,10 +47,9 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
     }
   }
 
-  /*
-   * TODO: Test transfer initiated signal and progress listener.
-   * As of this writing, only ensure the getResource method is called and bytes it provides are written to the destination, which produces a Resource instance that's tested independently with correct URI handling.
-   */
+  /* TODO: Test transfer initiated signal. */
+  /* TODO: Test progress listener. */
+  /* Presently, only ensure the getResource method is called and bytes it provides are written to the destination, which produces a Resource instance that's tested independently with correct URI handling. */
   "Get source" must {
     /** Work-around for paulbutcher/ScalaMock#114. */
     abstract class MockableResource extends Resource {
