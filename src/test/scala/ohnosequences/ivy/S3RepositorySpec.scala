@@ -4,7 +4,7 @@ import java.util.Date
 
 import better.files._
 import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.model.{CannedAccessControlList, ObjectMetadata, StorageClass}
+import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.util.StringInputStream
 import com.amazonaws.util.StringUtils.UTF8
 import org.apache.ivy.plugins.repository.Resource
@@ -24,21 +24,6 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
     override def clone(cloneName: String): Resource = ???
   }
 
-  /** More concise construction. */
-  class TestS3Repository(
-    s3Client: AmazonS3 = mock[AmazonS3],
-    overwrite: Boolean = true,
-    acl: CannedAccessControlList = CannedAccessControlList.PublicRead,
-    serverSideEncryption: Boolean = false,
-    storageClass: StorageClass = StorageClass.Standard
-  ) extends S3Repository(
-    s3Client,
-    overwrite,
-    acl,
-    serverSideEncryption,
-    storageClass
-  )
-
   "Resource factory" must {
     s"return ${classOf[S3Resource].getName} instance" which {
       "is cached with memoization" in {
@@ -55,7 +40,7 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
           metadata
         }
 
-        val repository = new TestS3Repository(client)
+        val repository = new S3MockableRepository(client)
 
         inside(repository.getResource(source)) {
           case resource: S3Resource =>
@@ -72,7 +57,7 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
   "Get source" must {
     s"use factory-provided ${classOf[Resource].getName}" in {
       val resource = mock[TestResource]
-      val repository = new TestS3Repository {
+      val repository = new S3MockableRepository(null) {
         override def getResource(source: String) = resource
       }
 
