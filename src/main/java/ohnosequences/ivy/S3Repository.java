@@ -185,7 +185,7 @@ public class S3Repository extends AbstractRepository {
         attempt++;
 
         getS3Client().createBucket(name);
-        if(getS3Client().doesBucketExist(name)) {
+        if(getS3Client().doesBucketExistV2(name)) {
           return true;
         }
       } catch(AmazonS3Exception s3e) {
@@ -214,7 +214,7 @@ public class S3Repository extends AbstractRepository {
       request.setMetadata(objectMetadata);
     }
 
-    if (!getS3Client().doesBucketExist(bucket)) {
+    if (!getS3Client().doesBucketExistV2(bucket)) {
       if(!createBucket(bucket)) {
         throw new Error("Couldn't create bucket");
       }

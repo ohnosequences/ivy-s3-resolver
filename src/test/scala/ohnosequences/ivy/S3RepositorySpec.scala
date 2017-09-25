@@ -141,7 +141,7 @@ class S3RepositorySpec extends WordSpec with Matchers with Inside
                 objectKey == request.getKey
             }
 
-            (client.doesBucketExist _).expects(bucketName).once().returns(true)
+            (client.doesBucketExistV2 _).expects(bucketName).once().returns(true)
             (client.putObject(_: PutObjectRequest)).expects(where(requestPredicate))
 
             val repository = new S3MockableRepository(client)

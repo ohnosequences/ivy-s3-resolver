@@ -11,7 +11,7 @@ javacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.amazonaws" % "aws-java-sdk-s3" % "1.11.197",
+  "com.amazonaws" % "aws-java-sdk-s3" % "1.11.202",
   "org.apache.ivy" % "ivy" % "2.4.0"
 )
 
