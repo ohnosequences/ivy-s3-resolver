@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.*;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
@@ -58,8 +57,6 @@ public class S3Repository extends AbstractRepository {
   private AmazonS3 s3Client;
 
   private Map<String, S3Resource> resourceCache = new HashMap<String, S3Resource>();
-
-  private Region region;
 
   private boolean overwrite;
 
@@ -93,12 +90,30 @@ public class S3Repository extends AbstractRepository {
     boolean serverSideEncryption,
     StorageClass storageClass
   ) {
-    s3Client = AmazonS3Client.builder().standard()
-      .withCredentials(provider)
-      .withRegion(region.toString())
-      .build();
+    this(
+      AmazonS3Client.builder().standard()
+        .withCredentials(provider)
+        .withRegion(region.toString())
+        .build(),
+      overwrite,
+      acl,
+      serverSideEncryption,
+      storageClass
+    );
+  }
+
+  /**
+   * Package-private constructor specifically for taking an {@link AmazonS3} instance that can be mocked under test.
+   */
+  S3Repository(
+    AmazonS3 s3Client,
+    boolean overwrite,
+    CannedAccessControlList acl,
+    boolean serverSideEncryption,
+    StorageClass storageClass
+  ) {
+    this.s3Client = s3Client;
     this.overwrite = overwrite;
-    this.region = region;
     this.acl = acl;
     this.serverSideEncryption = serverSideEncryption;
     this.storageClass = storageClass;
@@ -172,7 +187,7 @@ public class S3Repository extends AbstractRepository {
         attempt++;
 
         getS3Client().createBucket(name);
-        if(getS3Client().doesBucketExist(name)) {
+        if(getS3Client().doesBucketExistV2(name)) {
           return true;
         }
       } catch(AmazonS3Exception s3e) {
@@ -201,7 +216,7 @@ public class S3Repository extends AbstractRepository {
       request.setMetadata(objectMetadata);
     }
 
-    if (!getS3Client().doesBucketExist(bucket)) {
+    if (!getS3Client().doesBucketExistV2(bucket)) {
       if(!createBucket(bucket)) {
         throw new Error("Couldn't create bucket");
       }
@@ -229,3 +244,8 @@ public class S3Repository extends AbstractRepository {
 [main/java/ohnosequences/ivy/S3Resolver.java]: S3Resolver.java.md
 [main/java/ohnosequences/ivy/S3Resource.java]: S3Resource.java.md
 [main/java/ohnosequences/ivy/S3Utils.java]: S3Utils.java.md
+[test/scala/ohnosequences/ivy/S3MockableRepository.scala]: ../../../../test/scala/ohnosequences/ivy/S3MockableRepository.scala.md
+[test/scala/ohnosequences/ivy/S3RepositorySpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3RepositorySpec.scala.md
+[test/scala/ohnosequences/ivy/S3ResourceSpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3ResourceSpec.scala.md
+[test/scala/ohnosequences/ivy/S3UtilsSpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3UtilsSpec.scala.md
+[test/scala/ohnosequences/ivy/Scenarios.scala]: ../../../../test/scala/ohnosequences/ivy/Scenarios.scala.md

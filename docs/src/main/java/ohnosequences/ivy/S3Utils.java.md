@@ -51,7 +51,12 @@ public class S3Utils {
 
   private static URI getUri(String uri) {
     try {
-      return new URI(uri);
+```
+
+For ohnosequences/sbt-s3-resolver#52, has the effect of cleaning up redundant path delimiters (thereby fixing invalid S3 object keys).
+
+```java
+      return new URI(uri).normalize();
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException("'" + uri + "' is a malformed S3 URI");
     }
@@ -69,3 +74,8 @@ public class S3Utils {
 [main/java/ohnosequences/ivy/S3Resolver.java]: S3Resolver.java.md
 [main/java/ohnosequences/ivy/S3Resource.java]: S3Resource.java.md
 [main/java/ohnosequences/ivy/S3Utils.java]: S3Utils.java.md
+[test/scala/ohnosequences/ivy/S3MockableRepository.scala]: ../../../../test/scala/ohnosequences/ivy/S3MockableRepository.scala.md
+[test/scala/ohnosequences/ivy/S3RepositorySpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3RepositorySpec.scala.md
+[test/scala/ohnosequences/ivy/S3ResourceSpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3ResourceSpec.scala.md
+[test/scala/ohnosequences/ivy/S3UtilsSpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3UtilsSpec.scala.md
+[test/scala/ohnosequences/ivy/Scenarios.scala]: ../../../../test/scala/ohnosequences/ivy/Scenarios.scala.md

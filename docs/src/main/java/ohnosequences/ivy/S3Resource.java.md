@@ -120,3 +120,8 @@ public class S3Resource implements Resource {
 [main/java/ohnosequences/ivy/S3Resolver.java]: S3Resolver.java.md
 [main/java/ohnosequences/ivy/S3Resource.java]: S3Resource.java.md
 [main/java/ohnosequences/ivy/S3Utils.java]: S3Utils.java.md
+[test/scala/ohnosequences/ivy/S3MockableRepository.scala]: ../../../../test/scala/ohnosequences/ivy/S3MockableRepository.scala.md
+[test/scala/ohnosequences/ivy/S3RepositorySpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3RepositorySpec.scala.md
+[test/scala/ohnosequences/ivy/S3ResourceSpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3ResourceSpec.scala.md
+[test/scala/ohnosequences/ivy/S3UtilsSpec.scala]: ../../../../test/scala/ohnosequences/ivy/S3UtilsSpec.scala.md
+[test/scala/ohnosequences/ivy/Scenarios.scala]: ../../../../test/scala/ohnosequences/ivy/Scenarios.scala.md
