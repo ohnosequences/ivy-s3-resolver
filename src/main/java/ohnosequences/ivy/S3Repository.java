@@ -205,8 +205,11 @@ public class S3Repository extends AbstractRepository {
 
     PutObjectRequest request =
       new PutObjectRequest(bucket, key, source)
-        .withStorageClass(storageClass)
-        .withCannedAcl(acl);
+        .withStorageClass(storageClass);
+
+    if (acl != null){
+      request.setCannedAcl(acl);
+    }
 
     if (serverSideEncryption) {
       ObjectMetadata objectMetadata = new ObjectMetadata();
