@@ -49,7 +49,8 @@ public class S3Utils {
 
   private static URI getUri(String uri) {
     try {
-      return new URI(uri);
+      /* For ohnosequences/sbt-s3-resolver#52, has the effect of cleaning up redundant path delimiters (thereby fixing invalid S3 object keys). */
+      return new URI(uri).normalize();
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException("'" + uri + "' is a malformed S3 URI");
     }

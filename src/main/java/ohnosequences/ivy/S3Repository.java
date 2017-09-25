@@ -88,10 +88,29 @@ public class S3Repository extends AbstractRepository {
     boolean serverSideEncryption,
     StorageClass storageClass
   ) {
-    s3Client = AmazonS3Client.builder().standard()
-      .withCredentials(provider)
-      .withRegion(region.toString())
-      .build();
+    this(
+      AmazonS3Client.builder().standard()
+        .withCredentials(provider)
+        .withRegion(region.toString())
+        .build(),
+      overwrite,
+      acl,
+      serverSideEncryption,
+      storageClass
+    );
+  }
+
+  /**
+   * Package-private constructor specifically for taking an {@link AmazonS3} instance that can be mocked under test.
+   */
+  S3Repository(
+    AmazonS3 s3Client,
+    boolean overwrite,
+    CannedAccessControlList acl,
+    boolean serverSideEncryption,
+    StorageClass storageClass
+  ) {
+    this.s3Client = s3Client;
     this.overwrite = overwrite;
     this.acl = acl;
     this.serverSideEncryption = serverSideEncryption;
