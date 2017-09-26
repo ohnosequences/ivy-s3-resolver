@@ -75,7 +75,7 @@ public class S3Repository extends AbstractRepository {
       provider,
       overwrite,
       region,
-      Optional.of(CannedAccessControlList.PublicRead),
+      Optional.ofNullable(CannedAccessControlList.PublicRead),
       false,
       StorageClass.Standard
     );
@@ -95,7 +95,7 @@ public class S3Repository extends AbstractRepository {
         .withRegion(region.toString())
         .build(),
       overwrite,
-      Optional.of(acl),
+      Optional.ofNullable(acl),
       serverSideEncryption,
       storageClass
     );
