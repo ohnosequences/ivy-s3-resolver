@@ -20,6 +20,7 @@ package ohnosequences.ivy;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,7 @@ public class S3Repository extends AbstractRepository {
 
   private boolean serverSideEncryption;
 
-  private CannedAccessControlList acl;
+  private Optional<CannedAccessControlList> acl;
 
   private StorageClass storageClass;
 
@@ -76,7 +77,7 @@ public class S3Repository extends AbstractRepository {
       provider,
       overwrite,
       region,
-      CannedAccessControlList.PublicRead,
+      Optional.ofNullable(CannedAccessControlList.PublicRead),
       false,
       StorageClass.Standard
     );
@@ -87,6 +88,26 @@ public class S3Repository extends AbstractRepository {
     boolean overwrite,
     Region region,
     CannedAccessControlList acl,
+    boolean serverSideEncryption,
+    StorageClass storageClass
+  ) {
+    this(
+      AmazonS3Client.builder().standard()
+        .withCredentials(provider)
+        .withRegion(region.toString())
+        .build(),
+      overwrite,
+      Optional.ofNullable(acl),
+      serverSideEncryption,
+      storageClass
+    );
+  }
+
+  public S3Repository(
+    AWSCredentialsProvider provider,
+    boolean overwrite,
+    Region region,
+    Optional<CannedAccessControlList> acl,
     boolean serverSideEncryption,
     StorageClass storageClass
   ) {
@@ -108,7 +129,7 @@ public class S3Repository extends AbstractRepository {
   S3Repository(
     AmazonS3 s3Client,
     boolean overwrite,
-    CannedAccessControlList acl,
+    Optional<CannedAccessControlList> acl,
     boolean serverSideEncryption,
     StorageClass storageClass
   ) {
@@ -207,8 +228,9 @@ public class S3Repository extends AbstractRepository {
 
     PutObjectRequest request =
       new PutObjectRequest(bucket, key, source)
-        .withStorageClass(storageClass)
-        .withCannedAcl(acl);
+        .withStorageClass(storageClass);
+
+    acl.ifPresent(s -> request.setCannedAcl(s));
 
     if (serverSideEncryption) {
       ObjectMetadata objectMetadata = new ObjectMetadata();

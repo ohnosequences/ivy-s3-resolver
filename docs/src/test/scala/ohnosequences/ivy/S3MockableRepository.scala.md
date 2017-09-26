@@ -2,6 +2,7 @@
 ```scala
 package ohnosequences.ivy
 
+import java.util.Optional
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.{CannedAccessControlList, StorageClass}
 
@@ -13,7 +14,7 @@ import com.amazonaws.services.s3.model.{CannedAccessControlList, StorageClass}
 class S3MockableRepository(
   s3Client: AmazonS3,
   overwrite: Boolean = true,
-  acl: CannedAccessControlList = CannedAccessControlList.PublicRead,
+  acl: Optional[CannedAccessControlList] = Optional.of(CannedAccessControlList.PublicRead),
   serverSideEncryption: Boolean = false,
   storageClass: StorageClass = StorageClass.Standard
 ) extends S3Repository(
